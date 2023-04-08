@@ -22,9 +22,7 @@ func main() {
 		}
 	}
 
-	players, drawCards := getPlayers(noOfPlayers)
-
-	fmt.Println(players)
-	fmt.Println(len(drawCards))
+	//starts actual game
+	playGame(noOfPlayers)
 
 }
