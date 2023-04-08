@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-// checks if card played is valid
-func isValid(topCard Card, playedCard Card) bool {
-	return (topCard.Number == playedCard.Number || topCard.Suit == playedCard.Suit)
+// checks if card to be played is valid
+func isValid(topCard Card, cardToBePlayed Card) bool {
+	return (topCard.Number == cardToBePlayed.Number || topCard.Suit == cardToBePlayed.Suit)
 }
 
 // checks if player has any valid card to make a move
@@ -28,7 +28,7 @@ func removeCard(cards []Card, index int) []Card {
 	return append(ret, cards[index+1:]...)
 }
 
-// displays the cards help by the current player
+// displays the cards held by the current player
 func displayCards(currentPlayer *Player, turn int) {
 	fmt.Printf("Current Player: Player-%d\n", turn+1)
 	for i := 0; i < len(currentPlayer.Hand); i++ {
@@ -37,10 +37,14 @@ func displayCards(currentPlayer *Player, turn int) {
 	}
 }
 
+//if cards length is 0 then current player
+//is decleared as winner, game ends
 func checkWinner(cards []Card) bool {
 	return len(cards) <= 0
 }
 
+
+//shuffels the given slice in random order
 func shuffel(cards []Card) []Card {
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(cards),
@@ -51,10 +55,15 @@ func shuffel(cards []Card) []Card {
 	return cards
 }
 
+
+//checks if given card is action card or not
+//Action Cards: Ace, Kings, Jacks, Queens
 func checkActionCardPlayed(card Card) bool {
 	return (card.Number == 1 || card.Number == 11 || card.Number == 12 || card.Number == 13)
 }
 
+
+//draws a card from draw pile and returns the updated drawPile
 func drawCardFromPile(currentPlayer *Player, drawPile []Card, cardsToDraw int) []Card {
 	var cardsDrawn = make([]Card, 0)
 	//draws cards from pile = cardsToDraw

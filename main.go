@@ -1,7 +1,5 @@
 package main
 
-//entry point for the game
-
 import (
 	"fmt"
 )
@@ -12,9 +10,13 @@ func main() {
 	var noOfPlayers int
 
 	//gets the no of players
-	//make this a function
-	for ok := true; ok; ok = (noOfPlayers < 2 || noOfPlayers > 4) {
+	for {
+		//if the number of players > 4 or players < 2
+		//prompts to make a correct input
 		fmt.Scanln(&noOfPlayers)
+		if noOfPlayers > 1 && noOfPlayers < 5 {
+			break
+		}
 		if noOfPlayers < 2 {
 			fmt.Println("Players cannot be less than 2")
 		} else if noOfPlayers > 4 {

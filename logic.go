@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+//returns a card deck shuffeled randomly
 func getDeck() []Card {
 	var cards []Card
 
@@ -48,20 +49,22 @@ func getPlayersAndDrawPile(noOfPlayers int) ([]Player, []Card) {
 
 func playGame(noOfPlayers int) {
 
-	//gets players slice, drawCards slice
-	players, drawCards := getPlayersAndDrawPile(noOfPlayers)
+	//gets players slice, drawPile slice
+	players, drawPile := getPlayersAndDrawPile(noOfPlayers)
 
 	//slice of cards played by players
 	discardPile := make([]Card, 0)
-	discardPile = append(discardPile, drawCards[len(drawCards)-1])
-	drawCards = removeCard(drawCards, len(drawCards)-1)
+	discardPile = append(discardPile, drawPile[len(drawPile)-1])
+	drawPile = removeCard(drawPile, len(drawPile)-1)
 
 	playerTurn := 0
 	direction := 1
 
 	for {
 		//draw game condition
-		if len(drawCards) <= 0 {
+		//if no cards are left in draw Pile then match ends and
+		//is decleared as draw
+		if len(drawPile) <= 0 {
 			fmt.Println("Match Draw, Game Over!!")
 			break
 		}
@@ -72,7 +75,7 @@ func playGame(noOfPlayers int) {
 			playerTurn %= noOfPlayers
 		}
 
-		//get top card
+		//gets top card in discard pile
 		cardOnTop := discardPile[len(discardPile)-1]
 		fmt.Printf("Card on top:  %d - %s\n", cardOnTop.Number, cardOnTop.Suit)
 
@@ -91,12 +94,13 @@ func playGame(noOfPlayers int) {
 			//player plays a valid card
 			for index, card := range currentPlayer.Hand {
 				if isValid(cardOnTop, card) {
-					// moves the played car into discard pile
+					// checking if action card on discardPile top , so that they are not stackable
 					if isActionCard && card.Number == cardOnTop.Number {
 						continue
 					}
-					fmt.Printf("Player-%d played: %d - %s  \n\n",playerTurn + 1, card.Number, card.Suit)
+					fmt.Printf("Player-%d played: %d - %s  \n\n", playerTurn+1, card.Number, card.Suit)
 					cardPlayed = true
+					//moves the card played to discard pile
 					discardPile = append(discardPile, card)
 
 					//updates the hand of current player
@@ -110,7 +114,7 @@ func playGame(noOfPlayers int) {
 			fmt.Printf("No valid cards, drawing from the draw pile!!!\n\n")
 			//Draws cards from draw cards pile and updates
 			// the current players hand
-			drawCards = drawCardFromPile(currentPlayer, drawCards, 1)
+			drawPile = drawCardFromPile(currentPlayer, drawPile, 1)
 		}
 
 		//check if player has cards
@@ -134,12 +138,12 @@ func playGame(noOfPlayers int) {
 
 			//if card was Jack, next player picks 4 cards
 			if cardOnTop.Number == 11 {
-				drawCards = drawCardFromPile(currentPlayer, drawCards, 4)
+				drawPile = drawCardFromPile(currentPlayer, drawPile, 4)
 			}
 
 			// if card was Queen, next player picks 2 cards
 			if cardOnTop.Number == 12 {
-				drawCards = drawCardFromPile(currentPlayer, drawCards, 2)
+				drawPile = drawCardFromPile(currentPlayer, drawPile, 2)
 			}
 		}
 		playerTurn += direction
