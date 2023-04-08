@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
-	"time"
 )
 
 func getDeck() []Card {
@@ -12,26 +10,21 @@ func getDeck() []Card {
 	suits := []string{"heart", "spade", "diamond", "club"}
 
 	for _, element := range suits {
+		var card Card
 		for i := 1; i < 14; i++ {
-			card := Card{i, element}
-
+			card = Card{i, element}
 			cards = append(cards, card)
 		}
 	}
 
 	//shuffels the deck in random order
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(cards),
-		func(i, j int) {
-			cards[i], cards[j] = cards[j], cards[i]
-		},
-	)
+	cards = shuffel(cards)
 
 	return cards
 }
 
 // returns list of players and remianing deck
-func getPlayers(noOfPlayers int) ([]Player, []Card) {
+func getPlayersAndDrawPile(noOfPlayers int) ([]Player, []Card) {
 	//get the cards deck
 	cards := getDeck()
 
@@ -56,18 +49,20 @@ func getPlayers(noOfPlayers int) ([]Player, []Card) {
 func playGame(noOfPlayers int) {
 
 	//gets players slice, drawCards slice
-	players, drawCards := getPlayers(noOfPlayers)
+	players, drawCards := getPlayersAndDrawPile(noOfPlayers)
 
 	//slice of cards played by players
-	discardPile := []Card{drawCards[0]}
-	drawCards = removeCard(drawCards, 0)
+	discardPile := make([]Card, 0)
+	discardPile = append(discardPile, drawCards[len(drawCards)-1])
+	drawCards = removeCard(drawCards, len(drawCards)-1)
 
 	playerTurn := 0
+	direction := 1
 
 	for {
 		//draw game condition
 		if len(drawCards) <= 0 {
-			fmt.Println("Game Over!!")
+			fmt.Println("Match Draw, Game Over!!")
 			break
 		}
 
@@ -79,53 +74,75 @@ func playGame(noOfPlayers int) {
 
 		//get top card
 		cardOnTop := discardPile[len(discardPile)-1]
-		fmt.Printf("Card on top:  %d - %s\n", cardOnTop.Number, cardOnTop.Type)
+		fmt.Printf("Card on top:  %d - %s\n", cardOnTop.Number, cardOnTop.Suit)
 
 		//display current players card
 		currentPlayer := &players[playerTurn]
 		displayCards(currentPlayer, playerTurn)
 
+		//checks if top card is action card
+		isActionCard := checkActionCardPlayed(cardOnTop)
+
+		cardPlayed := false
+
 		//checks if player can make a valid move
-		if validCardsinHand(currentPlayer.hand, cardOnTop) {
-			fmt.Println("Choose a card")
+		if validCardsinHand(currentPlayer.Hand, cardOnTop) {
 
 			//player plays a valid card
-			for {
-				var card int
-				fmt.Scan(&card)
-				fmt.Println(currentPlayer.hand[card-1])
-				if isValid(cardOnTop, currentPlayer.hand[card-1]) {
-
-					//moves the played car into discard pile
-					discardPile = append(discardPile, currentPlayer.hand[card-1])
+			for index, card := range currentPlayer.Hand {
+				if isValid(cardOnTop, card) {
+					// moves the played car into discard pile
+					if isActionCard && card.Number == cardOnTop.Number {
+						continue
+					}
+					fmt.Printf("Player-%d played: %d - %s  \n\n",playerTurn + 1, card.Number, card.Suit)
+					cardPlayed = true
+					discardPile = append(discardPile, card)
 
 					//updates the hand of current player
-					cards := removeCard(currentPlayer.hand, card-1)
+					cards := removeCard(currentPlayer.Hand, index)
 					currentPlayer.updateHand(cards)
 					break
-				} else {
-					fmt.Println("Choose a valid card")
 				}
 			}
 
-			//check if player has cards
-			if checkWinner(currentPlayer.hand) {
-				//declares the current player as winner if no cards are left
-				//ends the game
-				fmt.Printf("Congratulations, Player-%d won, Game Over!!!\n\n", playerTurn + 1)
-				break
-			}
 		} else {
 			fmt.Printf("No valid cards, drawing from the draw pile!!!\n\n")
-			//updates the current player's hand
-			cards := currentPlayer.hand
-			cards = append(cards, drawCards[len(drawCards)-1])
-			currentPlayer.updateHand(cards)
-
-			//removes the card picked from draw pile
-			drawCards = removeCard(drawCards, len(drawCards)-1)
+			//Draws cards from draw cards pile and updates
+			// the current players hand
+			drawCards = drawCardFromPile(currentPlayer, drawCards, 1)
 		}
 
-		playerTurn += 1
+		//check if player has cards
+		if checkWinner(currentPlayer.Hand) {
+			//declares the current player as winner if no cards are left
+			//ends the game
+			fmt.Printf("Congratulations, Player-%d won, Game Over!!!\n\n", playerTurn+1)
+			break
+		}
+
+		if isActionCard && cardPlayed {
+			//if card was Ace, skip next player's turn
+			if cardOnTop.Number == 1 {
+				playerTurn += direction
+			}
+
+			//if card was king, reverse the direction of game flow
+			if cardOnTop.Number == 13 {
+				direction *= -1
+			}
+
+			//if card was Jack, next player picks 4 cards
+			if cardOnTop.Number == 11 {
+				drawCards = drawCardFromPile(currentPlayer, drawCards, 4)
+			}
+
+			// if card was Queen, next player picks 2 cards
+			if cardOnTop.Number == 12 {
+				drawCards = drawCardFromPile(currentPlayer, drawCards, 2)
+			}
+		}
+		playerTurn += direction
+		fmt.Println("=========================================")
 	}
 }

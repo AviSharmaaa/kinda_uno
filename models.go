@@ -2,18 +2,15 @@ package main
 
 type Card struct {
 	Number int
-	Type   string
-}
-
-type Deck struct {
-	Deck []Card
+	Suit   string
 }
 
 type Player struct {
 	Name string
-	hand []Card
+	Hand []Card
 }
 
+//model methods
 func (p *Player) updateHand(updatedHand []Card) {
-	p.hand = updatedHand
+	p.Hand = updatedHand
 }
