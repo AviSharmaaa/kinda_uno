@@ -65,7 +65,6 @@ func playGame(noOfPlayers int) {
 	playerTurn := 0
 
 	for {
-
 		//draw game condition
 		if len(drawCards) <= 0 {
 			fmt.Println("Game Over!!")
@@ -107,6 +106,14 @@ func playGame(noOfPlayers int) {
 				} else {
 					fmt.Println("Choose a valid card")
 				}
+			}
+
+			//check if player has cards
+			if checkWinner(currentPlayer.hand) {
+				//declares the current player as winner if no cards are left
+				//ends the game
+				fmt.Printf("Congratulations, Player-%d won, Game Over!!!\n\n", playerTurn + 1)
+				break
 			}
 		} else {
 			fmt.Printf("No valid cards, drawing from the draw pile!!!\n\n")
