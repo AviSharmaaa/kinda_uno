@@ -11,5 +11,5 @@ type Deck struct{
 
 type Player struct {
 	Name string;
-	hand Deck;
+	hand []Card;
 }
