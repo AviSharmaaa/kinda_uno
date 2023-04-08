@@ -43,13 +43,13 @@ Thank you!
 ![Screenshot1](screenshots/ss-1.png)
 
 
-![Screenshot2](screenshots\ss-2.png)
+![Screenshot2](screenshots/ss-2.png)
 
 
-![Screenshot3](screenshots\ss-3.png)
+![Screenshot3](screenshots/ss-3.png)
 
 
-![Screenshot4](screenshots\ss-4.png)
+![Screenshot4](screenshots/ss-4.png)
 
 
 ## 👨‍💻 Author
