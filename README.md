@@ -30,8 +30,8 @@ NOTE: actions are not stackable i.e. if Q is played by player 1 then player two 
 
 ## How to run the program.
 
-Simply clone this repository on your local system. Cd into the folder and run `go run .` in your terminal
-how many players you want the game to play for minimum = 2
+Simply clone this repository on your local system. Cd into the folder and run `go run .` in your terminal,
+and give input on how many players you want the game to play for minimum = 2
 and maximum = 4.
 
 Runs on any kind of Environment which supports Golang 1.19 or above.
