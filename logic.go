@@ -101,7 +101,7 @@ func playGame(noOfPlayers int) {
 					discardPile = append(discardPile, currentPlayer.hand[card-1])
 
 					//updates the hand of current player
-					cards := removeCard(currentPlayer.hand, card - 1)
+					cards := removeCard(currentPlayer.hand, card-1)
 					currentPlayer.updateHand(cards)
 					break
 				} else {
@@ -109,8 +109,14 @@ func playGame(noOfPlayers int) {
 				}
 			}
 		} else {
-			fmt.Println("Choose a card or draw from the pile!!!")
-			break;
+			fmt.Printf("No valid cards, drawing from the draw pile!!!\n\n")
+			//updates the current player's hand
+			cards := currentPlayer.hand
+			cards = append(cards, drawCards[len(drawCards)-1])
+			currentPlayer.updateHand(cards)
+
+			//removes the card picked from draw pile
+			drawCards = removeCard(drawCards, len(drawCards)-1)
 		}
 
 		playerTurn += 1
